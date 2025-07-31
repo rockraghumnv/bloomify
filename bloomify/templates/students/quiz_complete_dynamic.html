@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz Complete - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Quiz Complete</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>{{ reason }}</strong></p>
+                <p>Quiz ended on: <strong>{{ ended_on }}</strong></p>
+                <h5>Quiz Progress:</h5>
+                <ul>
+                    {% for entry in history %}
+                        <li>
+                            <strong>{{ entry.taxonomy|title }}</strong>: {{ entry.question }}<br>
+                            Your answer: {{ entry.selected }} | Correct: {{ entry.correct }} | {% if entry.is_correct %}<span class="text-success">Correct</span>{% else %}<span class="text-danger">Wrong</span>{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'students:dashboard' %}" class="btn btn-primary mt-3">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Feedback - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Performance Analysis</h3>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-4">{{ feedback.quiz.title }}</h4>
+                
+                <div class="mb-4">
+                    <h5>Overall Score: {{ feedback.overall_score|floatformat:1 }}%</h5>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: {{ feedback.overall_score }}%"></div>
+                    </div>
+                </div>
+                
+                <h5 class="mb-3">Performance by Bloom's Level:</h5>
+                <div class="mb-4">
+                    {% for level, score in feedback.get_level_scores %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ level|title }}</label>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ score }}%">
+                                {{ score|floatformat:1 }}%
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Detailed Feedback:</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            {{ feedback.feedback_text|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'students:my_results' %}" class="btn btn-primary">Back to Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

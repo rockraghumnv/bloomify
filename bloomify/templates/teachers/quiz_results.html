@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}View Results - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Quiz Results</h2>
+    </div>
+</div>
+<div class="row">
+    {% if student_responses %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>College</th>
+                    <th>Username/USN</th>
+                    <th>Question</th>
+                    <th>Selected Answer</th>
+                    <th>Correct?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for response in student_responses %}
+                <tr>
+                    <td>{% if response.student %}{{ response.student.first_name }}{% else %}{{ response.student_name }}{% endif %}</td>
+                    <td>{% if response.student and response.student.profile.college %}{{ response.student.profile.college }}{% else %}{{ response.student_college }}{% endif %}</td>
+                    <td>{% if response.student %}{{ response.student.username }}{% else %}{{ response.student_usn }}{% endif %}</td>
+                    <td>{{ response.question.question_text|truncatechars:50 }}</td>
+                    <td>{{ response.selected_answer }}</td>
+                    <td>{{ response.is_correct|yesno:'Correct,Incorrect' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No responses yet for this quiz.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

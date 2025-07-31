@@ -1,0 +1,58 @@
+/* Custom styles for Bloomify */
+
+/* Bloom's Taxonomy level colors */
+.bloom-remember { color: #4CAF50; }
+.bloom-understand { color: #2196F3; }
+.bloom-apply { color: #9C27B0; }
+.bloom-analyze { color: #FF9800; }
+.bloom-evaluate { color: #F44336; }
+.bloom-create { color: #795548; }
+
+/* Quiz progress indicators */
+.progress {
+    height: 1.5rem;
+    border-radius: 0.75rem;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+    background-color: #4a90e2;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Custom button styles */
+.btn-quiz {
+    border-radius: 25px;
+    padding: 10px 25px;
+}
+
+/* Dashboard stats */
+.stat-card {
+    border-left: 4px solid #4a90e2;
+    background-color: #f8f9fa;
+}
+
+/* Quiz feedback icons */
+.feedback-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+/* Response status indicators */
+.correct-answer {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid #4CAF50;
+}
+
+.incorrect-answer {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid #F44336;
+}

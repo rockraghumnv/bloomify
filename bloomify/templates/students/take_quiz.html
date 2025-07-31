@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Take Quiz - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">{{ quiz.title }}</h3>
+                <div class="mt-2">
+                    <strong>Teacher:</strong> {{ quiz.syllabus.teacher_name }}<br>
+                    <strong>College:</strong> {{ quiz.syllabus.college }}
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for question in questions %}
+                    <div class="mb-4">
+                        <h5 class="mb-3">{{ forloop.counter }}. {{ question.question_text }}</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_1" value="{{ question.option1 }}" required>
+                            <label class="form-check-label" for="q{{ question.id }}_1">A) {{ question.option1 }}</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_2" value="{{ question.option2 }}">
+                            <label class="form-check-label" for="q{{ question.id }}_2">B) {{ question.option2 }}</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_3" value="{{ question.option3 }}">
+                            <label class="form-check-label" for="q{{ question.id }}_3">C) {{ question.option3 }}</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_4" value="{{ question.option4 }}">
+                            <label class="form-check-label" for="q{{ question.id }}_4">D) {{ question.option4 }}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Submit Quiz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

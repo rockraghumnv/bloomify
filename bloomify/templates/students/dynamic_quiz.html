@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Dynamic Quiz - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Bloom's Taxonomy Level: {{ taxonomy_label }} ({{ taxonomy|title }})</h4>
+                <span>Question {{ current_count }} of {{ num_per_taxonomy }} for this level</span>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <p><strong>{{ question_text }}</strong></p>
+                    {% for option in options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="answer" id="option{{ forloop.counter }}" value="{{ option }}" required>
+                            <label class="form-check-label" for="option{{ forloop.counter }}">{{ option }}</label>
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary mt-3">Submit Answer</button>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Progress</div>
+            <div class="card-body">
+                <ul>
+                    {% for entry in progress.history %}
+                        <li>
+                            <strong>{{ entry.taxonomy|title }}</strong>: {{ entry.question }}<br>
+                            Your answer: {{ entry.selected }} | Correct: {{ entry.correct }} | {% if entry.is_correct %}<span class="text-success">Correct</span>{% else %}<span class="text-danger">Wrong</span>{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
