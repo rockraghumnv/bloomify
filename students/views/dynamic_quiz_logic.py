@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from teachers.models import Syllabus
 import google.generativeai as genai
+from django.conf import settings
 import re
 
 # Helper to split syllabus into modules
@@ -192,7 +193,8 @@ Example for {level.upper()}:
 {instructions['example']}
 Generate the question in the above format only. Do NOT ask for code writing or open-ended answers.
 """
-        genai.configure(api_key='AIzaSyCpkrcUWA3b5P3ZqGqhrI2YTAN8chyep-w')
+        api_key = settings.API_KEY
+        genai.configure(api_key=api_key)
         model = genai.GenerativeModel('models/gemini-1.5-flash')
         response = model.generate_content(prompt)
         questions_text = response.text.strip()
