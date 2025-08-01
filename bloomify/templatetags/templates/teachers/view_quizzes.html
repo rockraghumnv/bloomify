@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}View Quizzes - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Your Quizzes</h2>
+    </div>
+</div>
+
+<div class="row">
+    {% if quizzes %}
+        {% for quiz in quizzes %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ quiz.title }}</h5>
+                    <p class="card-text">Syllabus: {{ quiz.syllabus.title }}</p>
+                    <p class="card-text"><strong>Teacher:</strong> {{ quiz.syllabus.teacher_name }}<br><strong>College:</strong> {{ quiz.syllabus.college }}</p>
+                    <p class="card-text">Questions: {{ quiz.num_questions }}</p>
+                    <p class="card-text">Access Link: <code>{{ quiz.access_link }}</code></p>
+                    <p class="card-text">
+                        <strong>Student Quiz Link:</strong><br>
+                        <a href="{% url 'students:take_quiz' quiz.access_link %}" target="_blank">
+                            {{ request.build_absolute_uri|slice:":-1" }}{% url 'students:take_quiz' quiz.access_link %}
+                        </a>
+                    </p>
+                    <a href="{% url 'teachers:quiz_results' quiz.id %}" class="btn btn-primary">View Results</a>
+                    <form action="{% url 'teachers:delete_quiz' quiz.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete Quiz</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No quizzes created yet. Create a quiz from your syllabus!
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

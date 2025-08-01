@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Quiz - Bloomify{% endblock %}
+
+
+
+{% block content %}
+{{ created_quiz }}
+{{ syllabus }}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Create Quiz for "{{ syllabus.title }}"</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Quiz Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="num_questions" class="form-label">Number of Questions</label>
+                        <select class="form-control" id="num_questions" name="num_questions" required>
+                            <option value="6">6 (1 per Bloom's level)</option>
+                            <option value="12">12 (2 per Bloom's level)</option>
+                            <option value="18">18 (3 per Bloom's level)</option>
+                            <option value="24">24 (4 per Bloom's level)</option>
+                        </select>
+                        <small class="form-text text-muted">
+                            Questions will be evenly distributed across all levels of Bloom's Taxonomy
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'teachers:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Generate Quiz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% if created_quiz %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Created Quiz: {{ created_quiz.title }}</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Access Link:</strong> {{ created_quiz.access_link }}</p>
+                <p><strong>Number of Questions:</strong> {{ created_quiz.num_questions }}</p>
+                <h5>Questions:</h5>
+                <ul>
+                    {% for question in created_quiz.question_set.all %}
+                    <li>
+                        <strong>{{ question.question_text }}</strong>
+                        <ul>
+                            <li>A) {{ question.option1 }}</li>
+                            <li>B) {{ question.option2 }}</li>
+                            <li>C) {{ question.option3 }}</li>
+                            <li>D) {{ question.option4 }}</li>
+                        </ul>
+                        <p><strong>Correct Answer:</strong> {{ question.correct_answer }}</p>
+                    </li>
+                    {% empty %}
+                    <li>No questions available for this quiz.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if skipped_questions %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Skipped Questions</h3>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for skipped in skipped_questions %}
+                    <li>
+                        <p><strong>Reason:</strong> {{ skipped.reason }}</p>
+                        <pre>{{ skipped.content }}</pre>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block title %}Welcome to Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center">
+    <div class="col-md-8">
+        <h1 class="display-4 mb-4">Welcome to Bloomify</h1>
+        <p class="lead mb-5">A smart learning platform that generates questions based on Bloom's Taxonomy</p>
+        <div class="row">
+            {% if not user.is_authenticated %}
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3>Teachers</h3>
+                            <p>Upload syllabus and create smart quizzes based on Bloom's Taxonomy</p>
+                            <a href="{% url 'teachers:dashboard' %}" class="btn btn-primary">Teacher Portal</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3>Students</h3>
+                            <p>Take quizzes and get detailed feedback on your understanding</p>
+                            <a href="{% url 'students:dashboard' %}" class="btn btn-primary">Student Portal</a>
+                        </div>
+                    </div>
+                </div>
+            {% elif user|has_group:"teacher" %}
+                <div class="col-md-6 mx-auto">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3>Teachers</h3>
+                            <p>Upload syllabus and create smart quizzes based on Bloom's Taxonomy</p>
+                            <a href="{% url 'teachers:dashboard' %}" class="btn btn-primary">Teacher Portal</a>
+                        </div>
+                    </div>
+                </div>
+            {% elif user|has_group:"student" %}
+                <div class="col-md-6 mx-auto">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3>Students</h3>
+                            <p>Take quizzes and get detailed feedback on your understanding</p>
+                            <a href="{% url 'students:dashboard' %}" class="btn btn-primary">Student Portal</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

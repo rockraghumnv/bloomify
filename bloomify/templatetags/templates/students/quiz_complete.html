@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block title %}Quiz Complete - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Quiz Results</h3>
+            </div>
+            <div class="card-body text-center">
+                <h4 class="mb-4">{{ quiz.title }}</h4>
+                <div class="display-1 mb-3">{{ score|floatformat:1 }}%</div>
+                <p class="lead">You got {{ correct_count }} out of {{ total_questions }} questions correct!</p>
+                {% if student_name and student_college %}
+                <div class="mb-3">
+                    <strong>Name:</strong> {{ student_name }}<br>
+                    <strong>College:</strong> {{ student_college }}
+                </div>
+                {% endif %}
+                <div class="mt-4">
+                    {% if user.is_authenticated and user|has_group:"student" %}
+                        <a href="{% url 'feedback:generate_feedback' quiz.id %}" class="btn btn-primary btn-lg">View Detailed Feedback</a>
+                    {% else %}
+                        <div class="alert alert-info mt-3">
+                            <strong>Want to track your quiz history and get feedback?</strong><br>
+                            <a href="{% url 'register_student' %}" class="btn btn-success mt-2">Register as Student</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'students:dashboard' %}" class="btn btn-link">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

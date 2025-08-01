@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Syllabus - Bloomify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Upload Syllabus</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="teacher_name" class="form-label">Teacher Name</label>
+                        <input type="text" class="form-control" id="teacher_name" name="teacher_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="college" class="form-label">College Name</label>
+                        <input type="text" class="form-control" id="college" name="college" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Content (Optional if uploading PDF)</label>
+                        <textarea class="form-control" id="content" name="content" rows="10"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pdf_file" class="form-label">PDF File (Optional)</label>
+                        <input type="file" class="form-control" id="pdf_file" name="pdf_file" accept=".pdf">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'teachers:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Upload Syllabus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

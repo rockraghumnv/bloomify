@@ -20,6 +20,19 @@ def split_syllabus_modules(syllabus_text):
         modules.append(syllabus_text[start:end].strip())
     return [m for m in modules if m]
 
+# ...existing code...
+
+def split_syllabus_modules(syllabus_text):
+    matches = list(re.finditer(MODULE_SPLIT_REGEX, syllabus_text, re.IGNORECASE))
+    modules = []
+    if not matches:
+        return [syllabus_text] if syllabus_text.strip() else []
+    for i, match in enumerate(matches):
+        start = match.start()
+        end = matches[i+1].start() if i+1 < len(matches) else len(syllabus_text)
+        modules.append(syllabus_text[start:end].strip())
+    return [m for m in modules if m]
+
 def handle_dynamic_quiz(request):
     teacher_id = request.session.get('quiz_teacher_id')
     syllabus_id = request.session.get('quiz_syllabus_id')
@@ -117,18 +130,15 @@ def handle_dynamic_quiz(request):
             'asked_questions': asked_questions
         }
 
-    # Determine how many modules and how many questions per module
     num_modules = len(modules)
     questions_per_taxonomy = num_per_taxonomy
     if num_modules == 0:
         module_question_counts = [questions_per_taxonomy]
     else:
-        # Distribute questions as evenly as possible
         base = questions_per_taxonomy // num_modules
         extra = questions_per_taxonomy % num_modules
         module_question_counts = [base + (1 if i < extra else 0) for i in range(num_modules)]
 
-    # Track which module to use for the current question
     module_question_indices = progress.get('module_question_indices', [0]*num_modules)
     module_index = 0
     for i, count in enumerate(module_question_counts):
@@ -166,6 +176,9 @@ def handle_dynamic_quiz(request):
         },
     }
     instructions = bloom_instructions[level]
+    all_asked = set()
+    for qlist in asked_questions.values():
+        all_asked.update(qlist)
     for _ in range(5):
         prompt = f"""
 You are an expert educator and assessment designer. Your task is to generate 1 high-quality multiple choice question (MCQ) that strictly assesses the {level.upper()} level of Bloom's Taxonomy for the following module content (from a syllabus):
@@ -181,7 +194,7 @@ Guidelines:
 - Do NOT ask for code writing or open-ended answers. Only MCQ format.
 - Avoid ambiguous or trick questions.
 - Use clear, concise language suitable for the subject.
-- Do NOT repeat questions or options.
+- Do NOT repeat questions or options that have already been asked: {', '.join(all_asked)}
 Format:
 Question: [question text]
 A) [option1]
@@ -213,13 +226,8 @@ Generate the question in the above format only. Do NOT ask for code writing or o
                 correct_letter = line.replace('Correct:', '').strip()
                 answer_map = {'A': options[0] if len(options)>0 else '', 'B': options[1] if len(options)>1 else '', 'C': options[2] if len(options)>2 else '', 'D': options[3] if len(options)>3 else ''}
                 correct_answer = answer_map.get(correct_letter, '')
-        # Check for uniqueness across all modules and history
-        all_asked = set()
-        for qlist in asked_questions.values():
-            all_asked.update(qlist)
         if question_text and question_text not in all_asked and len(options) == 4 and all(options):
             break
-    # Update module_question_indices
     module_question_indices[module_index] += 1
     progress['module_question_indices'] = module_question_indices
     request.session['current_question_text'] = question_text
