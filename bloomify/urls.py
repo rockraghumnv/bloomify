@@ -19,16 +19,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
-from accounts import views as accounts_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/login/', accounts_views.custom_login, name='login'),
-    path('accounts/logout/', accounts_views.custom_logout, name='logout'),
-    path('accounts/register/teacher/', accounts_views.register_teacher, name='register_teacher'),
-    path('accounts/register/student/', accounts_views.register_student, name='register_student'),
-    path('accounts/register/', accounts_views.register, name='register'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/auth/', include('django.contrib.auth.urls')),
+    path('accounts/', include('accounts.urls')),
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('teachers/', include('teachers.urls')),
     path('students/', include('students.urls')),

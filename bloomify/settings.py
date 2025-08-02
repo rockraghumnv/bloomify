@@ -143,7 +143,7 @@ STATICFILES_DIRS = [
 # Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
+LOGIN_URL = '/accounts/login/'
 
 # Session configuration
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
