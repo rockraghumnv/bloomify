@@ -3,39 +3,57 @@
 {% block title %}Dynamic Quiz - Bloomify{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Bloom's Taxonomy Level: {{ taxonomy_label }} ({{ taxonomy|title }})</h4>
-                <span>Question {{ current_count }} of {{ num_per_taxonomy }} for this level</span>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <p><strong>{{ question_text }}</strong></p>
-                    {% for option in options %}
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="answer" id="option{{ forloop.counter }}" value="{{ option }}" required>
-                            <label class="form-check-label" for="option{{ forloop.counter }}">{{ option }}</label>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    
+                    {# Use the new 'level_name' variable #}
+                    <h4>Bloom's Taxonomy Level: {{ level_name }}</h4>
+                    
+                    {# Use the new question count variables #}
+                    <span class="text-light">Question {{ current_q_num }} of {{ total_q_in_level }} for this level</span>
+
+                </div>
+                <div class="card-body">
+                    
+                    {# Check if the main question data object exists #}
+                    {% if question_data %}
+                        
+                        {# CORRECTED a 'students:dynamic_quiz' to match your urls.py #}
+                        <form method="post" action="{% url 'students:dynamic_quiz' %}">
+                            {% csrf_token %}
+                            
+                            {# Use the 'question' key from the 'question_data' dictionary #}
+                            <p class="lead"><strong>{{ question_data.question }}</strong></p>
+                            
+                            <hr>
+
+                            {# Loop through the 'options' list within 'question_data' #}
+                            {% for option in question_data.options %}
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="answer" id="option{{ forloop.counter }}" value="{{ option }}" required>
+                                    <label class="form-check-label" for="option{{ forloop.counter }}">
+                                        {{ option }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            
+                            <button type="submit" class="btn btn-success mt-4 w-100">Submit Answer</button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            Could not load the question. Please try starting the quiz again.
                         </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-primary mt-3">Submit Answer</button>
-                </form>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-header">Progress</div>
-            <div class="card-body">
-                <ul>
-                    {% for entry in progress.history %}
-                        <li>
-                            <strong>{{ entry.taxonomy|title }}</strong>: {{ entry.question }}<br>
-                            Your answer: {{ entry.selected }} | Correct: {{ entry.correct }} | {% if entry.is_correct %}<span class="text-success">Correct</span>{% else %}<span class="text-danger">Wrong</span>{% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+
+            {# Note: The live progress history has been removed from this page. 
+               It is better suited for the final results page ('quiz_complete_dynamic.html') 
+               to keep this interface clean and focused on the current question. #}
+
         </div>
     </div>
 </div>
