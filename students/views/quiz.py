@@ -44,3 +44,40 @@ class DynamicQuizView(APIView):
         if resp is None:
             return HttpResponse('An error occurred in quiz logic.', status=500)
         return resp
+
+@login_required
+def start_descriptive_quiz(request):
+    """
+    This view STARTS the new Descriptive quiz. It clears any old descriptive
+    quiz state from the session and sets up the new one.
+    """
+    if request.method == 'POST':
+        # --- THOROUGHLY CLEAR ALL PREVIOUS QUIZ DATA ---
+        # Note the different session key 'desc_quiz_state' to keep the quiz types separate
+        request.session.pop('desc_quiz_state', None)
+        request.session.pop('current_question_data', None)
+        request.session.pop('quiz_teacher_id', None)
+        request.session.pop('quiz_syllabus_id', None)
+        request.session.pop('quiz_num_per_taxonomy', None)
+        
+        syllabus_id = request.POST.get('syllabus_id')
+        num_questions = request.POST.get('num_questions', '3')
+
+        if not syllabus_id:
+            messages.error(request, "Please select a syllabus to start the quiz.")
+            return redirect('students:dashboard')
+
+        try:
+            syllabus = Syllabus.objects.get(id=syllabus_id)
+        except Syllabus.DoesNotExist:
+            messages.error(request, "The selected syllabus does not exist.")
+            return redirect('students:dashboard')
+
+        # Set the new quiz parameters in the session (can be shared with the MCQ quiz)
+        request.session['quiz_teacher_id'] = syllabus.teacher.id
+        request.session['quiz_syllabus_id'] = syllabus.id
+        request.session['quiz_num_per_taxonomy'] = num_questions
+
+        return redirect('students:descriptive_quiz')
+    
+    return redirect('students:dashboard')

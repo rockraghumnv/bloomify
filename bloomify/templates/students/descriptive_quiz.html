@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Descriptive Quiz - Bloomify{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4>Bloom's Taxonomy Level: {{ level_name }}</h4>
+                    <span class="text-light">Question {{ current_q_num }} of {{ total_q_in_level }} for this level</span>
+                </div>
+                <div class="card-body">
+                    {% if question_data %}
+                        <form method="post" action="{% url 'students:descriptive_quiz' %}">
+                            {% csrf_token %}
+                            <p class="lead"><strong>{{ question_data.question }}</strong></p>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="studentAnswer" class="form-label">Your Answer:</label>
+                                <textarea class="form-control" id="studentAnswer" name="student_answer" rows="8" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-4 w-100">Submit Answer</button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            Could not load the question. Please try again.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

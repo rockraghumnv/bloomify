@@ -10,11 +10,41 @@
     </div>
 </div>
 
+<!-- Descriptive Quiz Form -->
+<form method="post" action="{% url 'students:start_descriptive_quiz' %}" class="mb-4">
+    {% csrf_token %}
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label for="desc_syllabus" class="form-label">Select Syllabus for Descriptive Quiz</label>
+            <select name="syllabus_id" id="desc_syllabus" class="form-select" required>
+                <option value="">-- Select Syllabus --</option>
+                {% for syllabus in syllabi %}
+                    <option value="{{ syllabus.id }}">{{ syllabus.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="desc_num_questions" class="form-label">Questions per Taxonomy</label>
+            <select name="num_questions" id="desc_num_questions" class="form-select">
+                <option value="3">3 per taxonomy</option>
+                <option value="6">6 per taxonomy</option>
+                <option value="8">8 per taxonomy</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-info">Take Descriptive Quiz</button>
+        </div>
+    </div>
+</form>
+
+<!-- Dynamic Quiz Form -->
+<form method="post" action="{% url 'students:start_dynamic_quiz' %}" class="mb-4">
+<!-- Dynamic Quiz Form -->
 <form method="post" action="{% url 'students:start_dynamic_quiz' %}" class="mb-4">
     {% csrf_token %}
     <div class="row g-2 align-items-end">
         <div class="col-md-3">
-            <label for="teacher" class="form-label">Select Teacher</label>
+            <label for="teacher" class="form-label">Select Teacher for Dynamic Quiz</label>
             <select name="teacher" id="teacher" class="form-select" required>
                 <option value="">-- All Teachers --</option>
                 {% for teacher in teachers %}
@@ -42,7 +72,7 @@
             </select>
         </div>
         <div class="col-md-3">
-            <button type="submit" class="btn btn-success">Take Quiz</button>
+            <button type="submit" class="btn btn-success">Take Dynamic Quiz</button>
         </div>
     </div>
 </form>

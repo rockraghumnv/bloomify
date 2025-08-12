@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Descriptive Quiz Complete - Bloomify{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Quiz Complete</h3>
+                    <p class="mb-0">{{ reason }}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Your Results:</h5>
+                    <ul class="list-group">
+                        {% for item in summary %}
+                            <li class="list-group-item">
+                                <p><strong>Level:</strong> {{ item.level|title }}</p>
+                                <p><strong>Question:</strong> {{ item.question }}</p>
+                                <p><strong>Your Answer:</strong><br><pre>{{ item.student_answer }}</pre></p>
+                                <p>
+                                    <strong>Result:</strong> 
+                                    {% if item.is_correct %}
+                                        <span class="badge bg-success">Correct ({{ item.match_score }})</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Incorrect ({{ item.match_score }})</span>
+                                    {% endif %}
+                                </p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'students:dashboard' %}" class="btn btn-primary mt-4">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
