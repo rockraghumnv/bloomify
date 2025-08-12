@@ -10,6 +10,9 @@
                 <div class="card-header bg-info text-white">
                     <h4>Bloom's Taxonomy Level: {{ level_name }}</h4>
                     <span class="text-light">Question {{ current_q_num }} of {{ total_q_in_level }} for this level</span>
+                    {% if topic %}
+                        <div class="mt-1"><small>Topic: {{ topic }}</small></div>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if question_data %}

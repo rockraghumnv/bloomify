@@ -1,0 +1,41 @@
+[12/Aug/2025 21:45:13] "POST /students/start-descriptive-quiz/ HTTP/1.1" 302 0
+Attempt 1 to generate a unique descriptive question for level 'remember'...
+[12/Aug/2025 21:45:22] "GET /students/descriptive-quiz/ HTTP/1.1" 200 4319
+
+AI Keywords: ['dictionaries', 'sets', 'key-value', 'mutability', 'operations']
+Student Tokens (first 15): ['python', 'dictionaries', 'sets', 'both', 'built-in', 'data', 'structures', 'hashing', 'serve', 'different', 'purposes', 'distinct', 'characteristics', 'dictionary', 'collection']
+Sequential matches: 4/5 = 80.0%
+  → Matched: ['dictionaries→dictionaries', 'sets→sets', 'key-value→key-value', 'operations→operations']
+Presence matches: 4/5 = 80.0%
+  → Details: ['dictionaries↔dictionaries', 'sets↔sets', 'key-value↔key-value', 'mutability✗missing', 'operations↔operations']
+Semantic density: 6/76 tokens = 7.9%
+Final weighted score: 69.18%
+
+
+[12/Aug/2025 21:46:43] "POST /students/descriptive-quiz/ HTTP/1.1" 302 0
+Attempt 1 to generate a unique descriptive question for level 'remember'...
+[12/Aug/2025 21:46:49] "GET /students/descriptive-quiz/ HTTP/1.1" 200 4388
+
+AI Keywords: ['file', 'modes', 'reading', 'writing', 'appending']
+Student Tokens (first 15): ['practical', 'scenario', 'illustrate', 'different', 'file', 'modes', 'python', 'imagine', 'building', 'simple', 'user', 'logging', 'data', 'storage', 'system']
+Sequential matches: 4/5 = 80.0%
+  → Matched: ['file→file', 'modes→modes', 'reading→read', 'appending→append']
+Presence matches: 4/5 = 80.0%
+  → Details: ['file↔file', 'modes↔modes', 'reading↔read', 'writing✗missing', 'appending↔append']
+Semantic density: 10/150 tokens = 6.7%
+Final weighted score: 69.00%
+
+[12/Aug/2025 21:49:48] "POST /students/descriptive-quiz/ HTTP/1.1" 302 0
+Attempt 1 to generate a unique descriptive question for level 'remember'...
+[12/Aug/2025 21:49:59] "GET /students/descriptive-quiz/ HTTP/1.1" 200 4293
+
+AI Keywords: ['scope', 'variables', 'local', 'global', 'functions']
+Student Tokens (first 15): ['variable', 'scope', 'python', 'determines', 'code', 'accessed', 'modified', 'two', 'main', 'types', 'local', 'global', '---', 'defined', 'outside']
+Sequential matches: 3/5 = 60.0%
+  → Matched: ['scope→scope', 'variables→variables', 'local→nonlocal']
+Presence matches: 5/5 = 100.0%
+  → Details: ['scope↔scope', 'variables↔variable', 'local↔local', 'global↔global', 'functions↔function']        
+Semantic density: 8/65 tokens = 12.3%
+Final weighted score: 66.85%
+[12/Aug/2025 21:51:28] "POST /students/descriptive-quiz/ HTTP/1.1" 302 0
+[12/Aug/2025 21:51:28] "GET /students/descriptive-quiz/ HTTP/1.1" 200 14195

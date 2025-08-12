@@ -17,6 +17,9 @@
                         {% for item in summary %}
                             <li class="list-group-item">
                                 <p><strong>Level:</strong> {{ item.level|title }}</p>
+                                {% if item.topic %}
+                                    <p><strong>Topic:</strong> {{ item.topic }}</p>
+                                {% endif %}
                                 <p><strong>Question:</strong> {{ item.question }}</p>
                                 <p><strong>Your Answer:</strong><br><pre>{{ item.student_answer }}</pre></p>
                                 <p>
