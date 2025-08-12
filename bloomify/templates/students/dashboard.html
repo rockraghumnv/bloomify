@@ -39,31 +39,18 @@
 
 <!-- Dynamic Quiz Form -->
 <form method="post" action="{% url 'students:start_dynamic_quiz' %}" class="mb-4">
-<!-- Dynamic Quiz Form -->
-<form method="post" action="{% url 'students:start_dynamic_quiz' %}" class="mb-4">
     {% csrf_token %}
     <div class="row g-2 align-items-end">
-        <div class="col-md-3">
-            <label for="teacher" class="form-label">Select Teacher for Dynamic Quiz</label>
-            <select name="teacher" id="teacher" class="form-select" required>
-                <option value="">-- All Teachers --</option>
-                {% for teacher in teachers %}
-                    <option value="{{ teacher.id }}" {% if teacher.id|stringformat:'s' == selected_teacher_id %}selected{% endif %}>
-                        {{ teacher_display|default_if_none:teacher.username|dict_get:teacher.id }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label for="syllabus" class="form-label">Select Syllabus</label>
-            <select name="syllabus" id="syllabus" class="form-select" required>
+        <div class="col-md-4">
+            <label for="dynamic_syllabus" class="form-label">Select Syllabus for Dynamic Quiz</label>
+            <select name="syllabus" id="dynamic_syllabus" class="form-select" required>
                 <option value="">-- Select Syllabus --</option>
                 {% for syllabus in syllabi %}
                     <option value="{{ syllabus.id }}" {% if syllabus.id|stringformat:'s' == selected_syllabus_id %}selected{% endif %}>{{ syllabus.title }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <label for="num_per_taxonomy" class="form-label">Questions per Taxonomy</label>
             <select name="num_per_taxonomy" id="num_per_taxonomy" class="form-select">
                 <option value="3" {% if num_per_taxonomy == '3' %}selected{% endif %}>3 per taxonomy</option>
@@ -71,7 +58,7 @@
                 <option value="8" {% if num_per_taxonomy == '8' %}selected{% endif %}>8 per taxonomy</option>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <button type="submit" class="btn btn-success">Take Dynamic Quiz</button>
         </div>
     </div>

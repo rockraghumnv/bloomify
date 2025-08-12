@@ -10,12 +10,22 @@ from django.http import HttpResponse
 @method_decorator(login_required, name='dispatch')
 class StartDynamicQuizView(APIView):
     def post(self, request):
-        teacher_id = request.POST.get('teacher')
         syllabus_id = request.POST.get('syllabus')
         num_per_taxonomy = int(request.POST.get('num_per_taxonomy', 3))
-        if not (teacher_id and syllabus_id):
-            messages.error(request, 'Please select both teacher and syllabus.')
+        
+        if not syllabus_id:
+            messages.error(request, 'Please select a syllabus.')
             return redirect('students:dashboard')
+            
+        try:
+            syllabus = Syllabus.objects.get(id=syllabus_id)
+        except Syllabus.DoesNotExist:
+            messages.error(request, 'The selected syllabus does not exist.')
+            return redirect('students:dashboard')
+        
+        # Get teacher from the selected syllabus
+        teacher_id = syllabus.teacher.id
+        
         request.session['quiz_teacher_id'] = teacher_id
         request.session['quiz_syllabus_id'] = syllabus_id
         request.session['quiz_num_per_taxonomy'] = num_per_taxonomy

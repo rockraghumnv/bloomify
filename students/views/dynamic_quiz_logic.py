@@ -6,6 +6,9 @@ from teachers.models import Syllabus
 import google.generativeai as genai
 from django.conf import settings
 import re
+import random
+import hashlib
+from datetime import datetime
 
 # --- Configuration ---
 genai.configure(api_key=settings.API_KEY)
@@ -101,17 +104,23 @@ def initialize_quiz_state(session):
     required_keys = ["level_index", "questions_answered_in_level", "asked_questions", "chat_history"]
 
     if not all(key in quiz_state for key in required_keys):
-        system_instruction = "You are an expert educator and assessment designer..." # Full instruction
+        # Create a unique session identifier for more randomness
+        session_id = hashlib.md5(f"{datetime.now().isoformat()}{random.randint(1000, 9999)}".encode()).hexdigest()[:8]
+        
+        system_instruction = f"You are an expert educator and assessment designer with session ID {session_id}. Create diverse, varied questions covering different topics and concepts from the given syllabus. Avoid repetitive patterns and ensure each question explores different aspects of the material."
         quiz_state = {
             "level_index": 0,
             "questions_answered_in_level": 0,
             "correct_in_level": 0,
             "max_level_reached": 0,
+            "consecutive_failures": 0,  # Track consecutive level failures
+            "session_id": session_id,  # Add unique session identifier
             "asked_questions": [],
+            "asked_topics": [],  # Track topics to ensure variety
             "final_summary": [],
             "chat_history": [
                 {'role': 'user', 'parts': [system_instruction]},
-                {'role': 'model', 'parts': ["Understood."]}
+                {'role': 'model', 'parts': ["Understood. I will create diverse questions covering different topics and concepts, avoiding repetitive patterns."]}
             ]
         }
         session['quiz_state'] = quiz_state
@@ -151,11 +160,23 @@ def handle_dynamic_quiz(request):
             required_to_pass = pass_marks.get(num_per_taxonomy, 2)
 
             if quiz_state['correct_in_level'] >= required_to_pass:
+                # User passed this level
                 quiz_state['level_index'] += 1
+                quiz_state['consecutive_failures'] = 0  # Reset failure counter on success
                 if quiz_state['level_index'] > quiz_state['max_level_reached']:
                     quiz_state['max_level_reached'] = quiz_state['level_index']
             else:
-                quiz_state['level_index'] -= 1
+                # User failed this level
+                quiz_state['consecutive_failures'] += 1
+                
+                # For level 0 (remember), exit immediately on failure
+                if quiz_state['level_index'] == 0:
+                    quiz_state['level_index'] = -1  # Exit quiz
+                # For other levels, allow one downgrade, then exit on second consecutive failure
+                elif quiz_state['consecutive_failures'] >= 2:
+                    quiz_state['level_index'] = -1  # Exit quiz
+                else:
+                    quiz_state['level_index'] -= 1  # Downgrade once
             
             quiz_state['correct_in_level'] = 0
             quiz_state['questions_answered_in_level'] = 0
@@ -181,29 +202,68 @@ def handle_dynamic_quiz(request):
         
         level_instruction = LEVEL_INSTRUCTIONS[level_name]
         
+        # Add randomness and variety to prevent same questions
+        variety_prompts = [
+            "Focus on a different concept or module from the syllabus.",
+            "Choose a topic that hasn't been covered in previous questions.",
+            "Explore a practical application or real-world scenario.",
+            "Create a question about advanced concepts in the syllabus.",
+            "Focus on fundamental principles and theory.",
+            "Generate a question about implementation details."
+        ]
+        
+        random_variety = random.choice(variety_prompts)
+        random_seed = random.randint(1000, 9999)
+        
+        # Get topics already covered to ensure variety
+        covered_topics = quiz_state.get('asked_topics', [])
+        topic_instruction = f"AVOID these already covered topics: {', '.join(covered_topics)}" if covered_topics else "Cover any relevant topic from the syllabus."
+        
         prompt = f"""
+        Session: {quiz_state.get('session_id', 'default')} | Seed: {random_seed}
+        
         Here is the entire course syllabus:
         ---
         {syllabus.content}
         ---
+        
         Your task: {level_instruction['desc']}
+        
+        DIVERSITY REQUIREMENT: {random_variety}
+        TOPIC VARIETY: {topic_instruction}
         
         CRITICAL RULE: Do NOT repeat any of the following questions:
         ---
         {', '.join(quiz_state['asked_questions'])}
         ---
         
+        IMPORTANT GUIDELINES:
+        1. Randomize the correct answer position - do NOT always make A the correct answer
+        2. Keep all options roughly the same length - avoid making the correct answer obviously longer
+        3. Make all distractors plausible and related to the topic
+        4. The correct answer should be randomly positioned (A, B, C, or D)
+        5. Choose a DIFFERENT topic/concept from previous questions
+        6. Ensure the question is unique and not similar to previous ones
+        
         Format your response STRICTLY as follows. {level_instruction['format']}
-        Topic: [Name of the Module/Topic you chose]
-        Question: [The question text]
-        A) [Option A]
-        B) [Option B]
-        C) [Option C]
-        D) [Option D]
-        Correct: [The correct letter, e.g., A]
+        Topic: [Name of the Module/Topic you chose - make it DIFFERENT from previous topics]
+        Question: [The question text - ensure it's UNIQUE and DIFFERENT]
+        A) [Option A - keep similar length to other options]
+        B) [Option B - keep similar length to other options]
+        C) [Option C - keep similar length to other options] 
+        D) [Option D - keep similar length to other options]
+        Correct: [The correct letter - RANDOMIZE this, don't always use A]
         """
         
         chat_history = quiz_state['chat_history']
+        
+        # Clear chat history periodically to prevent AI from getting stuck in patterns
+        if len(chat_history) > 10:  # Keep only recent context
+            system_msg = chat_history[0:2]  # Keep system instruction
+            recent_context = chat_history[-4:]  # Keep last 2 exchanges
+            chat_history = system_msg + recent_context
+            quiz_state['chat_history'] = chat_history
+        
         chat_history.append({'role': 'user', 'parts': [prompt]})
         
         try:
@@ -214,6 +274,10 @@ def handle_dynamic_quiz(request):
 
             if parsed_mcq and parsed_mcq.get('question') not in quiz_state['asked_questions']:
                 mcq = parsed_mcq
+                # Track the topic to ensure variety in future questions
+                if 'asked_topics' not in quiz_state:
+                    quiz_state['asked_topics'] = []
+                quiz_state['asked_topics'].append(parsed_mcq.get('topic', 'General'))
                 break
                 
         except Exception as e:
