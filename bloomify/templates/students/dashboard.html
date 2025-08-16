@@ -59,8 +59,25 @@
             </select>
         </div>
         <div class="col-md-4">
-            <button type="submit" class="btn btn-success">Take Dynamic Quiz</button>
+            <button type="submit" class="btn btn-success">Take MCQ Quiz</button>
         </div>
     </div>
 </form>
+
+<!-- Feedback History Section -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📊 Your Progress</h5>
+            </div>
+            <div class="card-body">
+                <p>Track your learning progress and view detailed feedback from your quiz attempts.</p>
+                <a href="{% url 'feedback:feedback_history' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-history"></i> View Feedback History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

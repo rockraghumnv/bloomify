@@ -148,12 +148,26 @@ def handle_dynamic_quiz(request):
         
         quiz_state['questions_answered_in_level'] += 1
         quiz_state['asked_questions'].append(current_question.get('question'))
-        quiz_state['final_summary'].append({
+        
+        # Store detailed results for feedback system
+        detailed_result = {
             'level': BLOOM_LEVELS[quiz_state['level_index']],
             'question': current_question.get('question'),
-            'topic': current_question.get('topic'),
-            'is_correct': is_correct
-        })
+            'student_answer': user_answer.strip(),
+            'correct_option': current_question.get('correct_answer'),
+            'selected_option': user_answer.strip(),
+            'score_percentage': 100.0 if is_correct else 0.0,
+            'is_correct': is_correct,
+            'topic': current_question.get('topic', 'General'),
+            'options': {
+                'A': current_question.get('option_a', ''),
+                'B': current_question.get('option_b', ''),
+                'C': current_question.get('option_c', ''),
+                'D': current_question.get('option_d', '')
+            }
+        }
+        
+        quiz_state['final_summary'].append(detailed_result)
 
         if quiz_state['questions_answered_in_level'] >= num_per_taxonomy:
             pass_marks = {3: 2, 6: 4, 8: 6}
@@ -187,11 +201,39 @@ def handle_dynamic_quiz(request):
     level_index = quiz_state['level_index']
 
     if level_index < 0 or level_index >= len(BLOOM_LEVELS):
-        reason = "Congratulations! You mastered all levels." if level_index >= len(BLOOM_LEVELS) else "Quiz ended."
-        return render(request, 'students/quiz_complete_dynamic.html', {
-            'summary': quiz_state['final_summary'],
-            'reason': reason
-        })
+        # Quiz is complete, save feedback and redirect
+        from feedback.services import FeedbackService
+        
+        # Prepare data for feedback service
+        teacher_id = request.session.get('quiz_teacher_id')
+        syllabus_id = request.session.get('quiz_syllabus_id')
+        student_user = request.user
+        max_level_reached = quiz_state.get('max_level_reached', 0)
+        question_results = quiz_state.get('final_summary', [])
+        
+        # Save feedback to database
+        feedback_record = FeedbackService.save_quiz_feedback(
+            student_user=student_user,
+            teacher_id=teacher_id,
+            syllabus_id=syllabus_id,
+            quiz_type='mcq',
+            max_level_reached=max_level_reached,
+            question_results=question_results
+        )
+        
+        # Clean up session
+        request.session.pop('quiz_state', None)
+        request.session.pop('current_question_data', None)
+        
+        if feedback_record:
+            return redirect('feedback:detailed_feedback', feedback_id=feedback_record.id)
+        else:
+            # Fallback to old template if feedback saving fails
+            reason = "Congratulations! You mastered all levels." if level_index >= len(BLOOM_LEVELS) else "Quiz ended."
+            return render(request, 'students/quiz_complete_dynamic.html', {
+                'summary': quiz_state['final_summary'],
+                'reason': reason
+            })
     
     syllabus = get_object_or_404(Syllabus, id=syllabus_id, teacher_id=teacher_id)
     level_name = BLOOM_LEVELS[level_index]

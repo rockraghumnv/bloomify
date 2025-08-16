@@ -26,7 +26,9 @@
                             {% csrf_token %}
                             
                             {# Use the 'question' key from the 'question_data' dictionary #}
-                            <p class="lead"><strong>{{ question_data.question }}</strong></p>
+                            <div class="question-text">
+                                <strong>{{ question_data.question|linebreaks }}</strong>
+                            </div>
                             
                             <hr>
 
@@ -34,8 +36,8 @@
                             {% for option in question_data.options %}
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="answer" id="option{{ forloop.counter }}" value="{{ option }}" required>
-                                    <label class="form-check-label" for="option{{ forloop.counter }}">
-                                        {{ option }}
+                                    <label class="form-check-label option-label" for="option{{ forloop.counter }}">
+                                        <pre class="code-option mb-0">{{ option }}</pre>
                                     </label>
                                 </div>
                             {% endfor %}
@@ -57,4 +59,46 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question-text {
+        font-size: 1.1em;
+        margin-bottom: 1rem;
+    }
+    
+    .code-option {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 10px;
+        font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+        font-size: 0.9em;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: #212529;
+        margin: 0;
+    }
+    
+    .option-label {
+        width: 100%;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+    
+    .form-check {
+        margin-bottom: 1rem !important;
+    }
+    
+    .form-check-input:checked ~ .option-label .code-option {
+        background-color: #e7f3ff;
+        border-color: #0d6efd;
+    }
+    
+    .form-check-input {
+        margin-top: 0.5rem;
+    }
+</style>
 {% endblock %}
