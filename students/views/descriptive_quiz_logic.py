@@ -10,7 +10,7 @@ import random
 
 # --- Configuration ---
 genai.configure(api_key=settings.API_KEY)
-MODEL = genai.GenerativeModel('gemini-1.5-flash')
+MODEL = genai.GenerativeModel('gemini-2.5-flash')
 BLOOM_LEVELS = ['remember', 'understand', 'apply', 'analyze', 'evaluate', 'create']
 
 # --- NEW: Level-Specific Instructions for Descriptive Questions ---
